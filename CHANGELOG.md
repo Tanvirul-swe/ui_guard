@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 1.0.1
 
 - 🎉 Initial release of `ui_guard`
 - Role-based UI control for Flutter
