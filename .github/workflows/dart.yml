@@ -1,0 +1,31 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Restore pub credentials
+        run: |
+          mkdir -p "${HOME}/.pub-cache"
+          echo "${{ secrets.PUB_CREDENTIALS }}" > "${HOME}/.pub-cache/credentials.json"
+
+      - name: Get dependencies
+        run: dart pub get
+
+      - name: Dry-run check
+        run: flutter pub publish --dry-run
+
+      - name: Publish to pub.dev
+        run: flutter pub publish -f
