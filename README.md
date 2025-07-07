@@ -244,8 +244,8 @@ Here are some common scenarios where `ui_guard` is useful:
 
 Contributions are welcome!
 
-- 🌐 GitHub: [https://github.com/your-username/ui_guard](https://github.com/your-username/ui_guard)
-- 🐛 Issues: [https://github.com/your-username/ui_guard/issues](https://github.com/your-username/ui_guard/issues)
+- 🌐 GitHub: [https://github.com/Tanvirul-swe](https://github.com/Tanvirul-swe))
+- 🐛 Issues: [https://github.com/Tanvirul-swe/ui_guard/issues](https://github.com/Tanvirul-swe/ui_guard/issues)
 
 To contribute:
 
