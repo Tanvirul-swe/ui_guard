@@ -16,7 +16,8 @@ class RoleBasedView extends StatelessWidget {
   final Widget? fallback;
 
   /// Optional function to override the default role-based access logic.
-  final bool Function(List<String> userRoles, List<String> requiredRoles)? accessEvaluator;
+  final bool Function(List<String> userRoles, List<String> requiredRoles)?
+      accessEvaluator;
 
   /// The Guard instance holding current roles.
   final Guard guard;
