@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ui_guard/ui_guard.dart';
-import '../core/guard.dart';
 
 /// A widget that shows [child] only if the current user has any of the [requiredRoles].
 ///
