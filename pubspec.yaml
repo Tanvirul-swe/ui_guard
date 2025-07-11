@@ -1,9 +1,9 @@
 name: ui_guard
-description: A simple and flexible role-based UI control plugin for Flutter.
+description: Easily manage role, permission, and condition-based access control in Flutter UIs — entirely in Dart.
 repository: https://github.com/Tanvirul-swe/ui_guard
 issue_tracker: https://github.com/Tanvirul-swe/ui_guard/issues
 
-version: 1.0.1
+version: 1.0.2
 homepage: https://tanvirdev.com
 
 topics: [
