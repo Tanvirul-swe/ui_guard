@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ui_guard/ui_guard.dart';
+
 /// A widget that guards an entire screen or widget subtree based on user roles.
 ///
 /// It renders the [builder] content if the user has any of the [requiredRoles].
@@ -15,7 +16,8 @@ class AccessGuard extends StatelessWidget {
   final WidgetBuilder? fallbackBuilder;
 
   /// Optional custom logic for determining access.
-  final bool Function(List<String> userRoles, List<String> requiredRoles)? accessEvaluator;
+  final bool Function(List<String> userRoles, List<String> requiredRoles)?
+      accessEvaluator;
 
   /// The Guard instance holding current roles.
   final Guard guard;

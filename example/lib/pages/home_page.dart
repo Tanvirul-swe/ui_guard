@@ -6,7 +6,6 @@ import 'package:example/widget/toggle_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:ui_guard/ui_guard.dart';
 
-
 class RoleHomePage extends StatefulWidget {
   const RoleHomePage({super.key});
 
@@ -53,7 +52,8 @@ class _RoleHomePageState extends State<RoleHomePage> {
 
   void _toggleDevOverride() {
     setState(() {
-      GuardConfig.developerOverrideEnabled = !GuardConfig.developerOverrideEnabled;
+      GuardConfig.developerOverrideEnabled =
+          !GuardConfig.developerOverrideEnabled;
     });
   }
 
@@ -65,7 +65,9 @@ class _RoleHomePageState extends State<RoleHomePage> {
         actions: [
           IconButton(
             icon: Icon(
-              GuardConfig.developerOverrideEnabled ? Icons.visibility : Icons.visibility_off,
+              GuardConfig.developerOverrideEnabled
+                  ? Icons.visibility
+                  : Icons.visibility_off,
               color: Colors.white,
             ),
             tooltip: 'Toggle Developer Override',

@@ -11,7 +11,10 @@ Widget buildPanel({
     elevation: 1,
     child: ListTile(
       leading: Icon(icon, color: color),
-      title: Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+      title: Text(
+        title,
+        style: TextStyle(color: color, fontWeight: FontWeight.bold),
+      ),
       subtitle: Text(message),
     ),
   );
