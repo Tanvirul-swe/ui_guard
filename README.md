@@ -4,20 +4,13 @@
 </p>
 
 <p align="center">
-<a href="https://pub.dev/packages/flutter_bloc"><img src="https://img.shields.io/pub/v/flutter_bloc.svg" alt="Pub"></a>
+<a href="https://pub.dev/packages/ui_guard"><img src="https://img.shields.io/pub/v/flutter_bloc.svg" alt="Pub"></a>
 <a href="https://github.com/Tanvirul-swe/ui_guard/actions"><img src="https://github.com/felangel/bloc/actions/workflows/main.yaml/badge.svg" alt="build"></a>
-<a href="https://github.com/felangel/bloc"><img src="https://img.shields.io/github/stars/felangel/bloc.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
+<a href="https://github.com/Tanvirul-swe/ui_guard"><img src="https://img.shields.io/github/stars/felangel/bloc.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="Star on Github"></a>
 <a href="https://flutter.dev/docs/development/data-and-backend/state-mgmt/options#bloc--rx"><img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website"></a>
 </p>
 
----
-
-Widgets that make role-based UI control simple and scalable. Built to keep your Flutter app secure and user-friendly.
-
-
-_\*Note: All widgets in the ui_guard package work seamlessly with your role management logic._
-
----
+<p align="center"> <strong>Widgets that make role, permission, and condition-based UI control <em>simple, scalable,</em> and <em>secure</em>.</strong><br> Built entirely in Dart to help you build smarter, access-aware Flutter apps. </p> <p align="center"> <em>✨ ui_guard works seamlessly with any role management logic or state management approach.</em> </p>
 
 ## 🔐 Why use ui_guard?
 
@@ -34,10 +27,11 @@ In many apps, you need to control access to certain parts of your UI:
 ## ✨ Features
 
 - ✅ Guard widgets or entire screens based on roles
+- 🧩 Combine roles, permissions, and runtime conditions
+- 🧪 Developer override mode for UI testing
 - 🔄 Easily update roles at runtime
-- 📦 Stateless and pure Dart — no native dependencies
-- 🧪 Testable and platform-agnostic
-- 🧩 Works with any state management
+- 📦 Pure Dart — no platform dependencies
+- ♻️ Works with any state management
 
 ---
 
@@ -96,135 +90,32 @@ RoleGuard.hasAnyRole(['admin'], ['admin', 'user']); // true
 RoleGuard.hasAllRoles(['admin', 'editor'], ['admin']); // true
 ```
 
-## 📱 Example App
-Here’s a complete usage example. You can also explore the /example folder included with the package.
+#### 🧪 Developer Override Mode
+Bypass all restrictions during development or testing:
 
 ```dart
-      import 'package:flutter/material.dart';
-      import 'package:ui_guard/ui_guard.dart'; // Your plugin
-      
-      void main() {
-        runApp(const RoleBasedApp());
-      }
-      
-      class RoleBasedApp extends StatelessWidget {
-        const RoleBasedApp({super.key});
-      
-        @override
-        Widget build(BuildContext context) {
-          return MaterialApp(
-            title: 'UI Guard Plugin Example',
-            theme: ThemeData(primarySwatch: Colors.deepPurple),
-            home: const RoleHomePage(),
-          );
-        }
-      }
-      
-      class RoleHomePage extends StatefulWidget {
-        const RoleHomePage({super.key});
-      
-        @override
-        State<RoleHomePage> createState() => _RoleHomePageState();
-      }
-      
-      class _RoleHomePageState extends State<RoleHomePage> {
-        final Guard guard = Guard();
-      
-        @override
-        void initState() {
-          super.initState();
-          guard.setUserRoles(['admin']); // Default role
-        }
-      
-        void _toggleRole() {
-          final isAdmin = guard.currentRoles.contains('admin');
-          final newRole = isAdmin ? 'guest' : 'admin';
-          setState(() {
-            guard.setUserRoles([newRole]);
-          });
-        }
-      
-        @override
-        Widget build(BuildContext context) {
-          final currentRole = guard.currentRoles.join(', ');
-      
-          return Scaffold(
-            appBar: AppBar(title: const Text('Role-Based UI Example')),
-            body: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Current Role: $currentRole',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 30),
-      
-                  /// Show different content based on access
-                  AccessGuard(
-                    guard: guard,
-                    requiredRoles: ['admin'],
-                    builder: (_) => const AdminPanel(),
-                    fallbackBuilder: (_) => const GuestMessage(),
-                  ),
-      
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _toggleRole,
-                    icon: const Icon(Icons.sync_alt),
-                    label: Text(
-                      guard.currentRoles.contains('admin')
-                          ? 'Switch to Guest'
-                          : 'Switch to Admin',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-      }
-      
-      class AdminPanel extends StatelessWidget {
-        const AdminPanel({super.key});
-      
-        @override
-        Widget build(BuildContext context) {
-          return Column(
-            children: const [
-              Icon(Icons.admin_panel_settings, size: 48, color: Colors.green),
-              SizedBox(height: 10),
-              Text(
-                'Welcome, Admin!\nYou have full access to this section.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          );
-        }
-      }
-      
-      class GuestMessage extends StatelessWidget {
-        const GuestMessage({super.key});
-      
-        @override
-        Widget build(BuildContext context) {
-          return Column(
-            children: const [
-              Icon(Icons.lock_outline, size: 48, color: Colors.redAccent),
-              SizedBox(height: 10),
-              Text(
-                'Restricted Area.\nYou are viewing this as a guest.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.red),
-              ),
-            ],
-          );
-        }
-      }
+class GuardConfig {
+  static bool developerOverrideEnabled = true; // Use in dev only
+}
+```
+
+#### 🧮 Combined Access Conditions
+Create advanced rules using roles, permissions, and runtime checks:
+
+```dart
+CombinedGuard(
+  guard: guard,
+  requiredRoles: ['manager'],
+  requiredPermissions: ['edit_team'],
+  condition: () => organization.isInternalMode,
+  builder: (_) => const TeamEditor(),
+  fallbackBuilder: (_) => const Text('Access Restricted'),
+);
 
 ```
+
+## 📱 Example App
+Explore the full working example in the [`/example`](example) directory.
 
 ## 🧩 Use Cases
 
@@ -238,14 +129,19 @@ Here are some common scenarios where `ui_guard` is useful:
 | Nested permissions        | Show moderator tools for `['moderator', 'admin']` roles |
 | Read-only vs edit access  | Conditionally render buttons or fields          |
 | Subscription tiers        | Control access with `['free', 'premium', 'pro']` roles |
+| Combined logic            | Use roles + permissions + runtime conditions |
+| Developer override	      |Skip restrictions in development or test |
+
 
 
 ## 💬 Contributing
 
 Contributions are welcome!
 
-- 🌐 GitHub: [https://github.com/Tanvirul-swe](https://github.com/Tanvirul-swe))
-- 🐛 Issues: [https://github.com/Tanvirul-swe/ui_guard/issues](https://github.com/Tanvirul-swe/ui_guard/issues)
+- <a href="https://github.com/Tanvirul-swe/ui_guard" target="_blank">🌐 GitHub</a>
+- <a href="https://github.com/Tanvirul-swe/ui_guard/issues" target="_blank">🐛 Issues</a>
+
+
 
 To contribute:
 
