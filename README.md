@@ -159,6 +159,21 @@ Please ensure your Flutter and Dart versions meet this requirement.
 
 ---
 
+## ☕ Support My Work
+
+If you find `ui_guard` helpful, consider supporting me!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://coff.ee/tanvir_swe)
+
+Prefer mobile? Scan the QR code below to support me directly:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/99db4bcd-9784-4947-91cc-073977262e89" width="180" alt="Buy Me a Coffee QR Code">
+</p>
+
+
+
+
 ## 👤 Maintainers
 
 - MD. TANVIRUL ISLAM
