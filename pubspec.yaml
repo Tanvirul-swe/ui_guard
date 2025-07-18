@@ -3,7 +3,7 @@ description: Easily manage role, permission, and condition-based access control 
 repository: https://github.com/Tanvirul-swe/ui_guard
 issue_tracker: https://github.com/Tanvirul-swe/ui_guard/issues
 
-version: 1.0.2
+version: 1.0.3
 homepage: https://tanvirdev.com
 
 topics: [
