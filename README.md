@@ -114,6 +114,32 @@ CombinedGuard(
 
 ```
 
+#### ⏱️ Timed Access Control
+
+Use `TimedAccessGuard` to control UI visibility based on time. Ideal for:
+
+- 🎁 Limited-time offers & flash sales
+- 🧪 Beta or trial feature access
+- 🔧 Maintenance or downtime notices
+- 📅 Event-specific content
+- 🛍️ Daily/weekly deals
+- 📢 Time-based announcements
+- 🏢 Business-hour-only features
+
+```dart
+TimedAccessGuard(
+  start: DateTime(2025, 7, 18, 9),
+  end: DateTime(2025, 7, 18, 13),
+  checkInterval: Duration(seconds: 1),
+  onTimeUpdate: (remaining) {
+    debugPrint("⏱️ Time left: ${remaining.inSeconds}s");
+  },
+  builder: (_) => PromoBanner(), // Active content
+  fallbackBuilder: (_) => SizedBox.shrink(), // Hidden or fallback
+),
+
+```
+
 ## 📱 Example App
 Explore the full working example in the [`/example`](example) directory.
 
@@ -131,6 +157,7 @@ Here are some common scenarios where `ui_guard` is useful:
 | Subscription tiers        | Control access with `['free', 'premium', 'pro']` roles |
 | Combined logic            | Use roles + permissions + runtime conditions |
 | Developer override	      |Skip restrictions in development or test |
+| Time-based access 	      |Display banners or UI only within a defined time range `TimedAccessGuard` |
 
 
 
