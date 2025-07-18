@@ -1,5 +1,18 @@
 # Changelog
 
+
+## [1.0.3]
+### Added
+- `TimedAccessGuard`: show or hide UI elements based on a configurable time window
+- Supports automatic refresh with customizable check intervals
+- Optional callback to get remaining time updates
+- Useful for limited-time offers, maintenance messages, and beta access banners
+
+### Improved
+- Updated README with TimedAccessGuard usage examples and best practices
+
+---
+
 ## [1.0.2]
 ### Added
 - `CombinedGuard`: combine roles, permissions, and custom runtime conditions
