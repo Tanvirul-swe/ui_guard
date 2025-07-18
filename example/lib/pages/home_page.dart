@@ -1,4 +1,5 @@
 import 'package:example/helper/guard_setup.dart';
+import 'package:example/pages/timed_access_page.dart';
 import 'package:example/widget/combined_guard_panel.dart';
 import 'package:example/widget/permission_panel.dart';
 import 'package:example/widget/role_panel.dart';
@@ -92,6 +93,17 @@ class _RoleHomePageState extends State<RoleHomePage> {
             onRoleToggle: _toggleRole,
             onPermissionToggle: _togglePermission,
             onInternalToggle: _toggleInternalMode,
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TimedAccessPage()),
+              );
+            },
+            label: Text("Go to Timed Access Page"),
+            icon: Icon(Icons.timer_outlined),
           ),
         ],
       ),
