@@ -76,11 +76,11 @@ AccessGuard(
 Use when you want to show/hide a single widget inline.
 
 ```dart
-AccessGuard(
+RoleBasedView(
   guard: guard,
-  requiredRoles: ['admin'],
-  builder: (_) => const Text('Admin Panel'),
-  fallbackBuilder: (_) => const Text('Access Denied'),
+  requiredRoles: ['admin', 'moderator'],
+  child: const Text('Admin & Moderator Content'),
+  fallback: const Text('You do not have permission to view this content.'),
 );
 ```
 
@@ -189,8 +189,8 @@ Here are some common scenarios where `ui_guard` is useful:
 | Read-only vs edit access  | Conditionally render buttons or fields          |
 | Subscription tiers        | Control access with `['free', 'premium', 'pro']` roles |
 | Combined logic            | Use roles + permissions + runtime conditions |
-| Developer override	      |Skip restrictions in development or test |
-| Time-based access 	      |Display banners or UI only within a defined time range `TimedAccessGuard` |
+| Developer override	      | Skip restrictions in development or test |
+| Time-based access 	      | Display banners or UI only within a defined time range `TimedAccessGuard` |
 | Scheduled access          | Control UI visibility based on cron-style schedules using `ScheduleGuard` |
 
 
