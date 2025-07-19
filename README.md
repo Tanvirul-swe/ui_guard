@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="https://github.com/user-attachments/assets/59d153fd-40d7-4cef-8e5f-b108ad6515dc" height="100" alt="UI Guard Package" />
+<img src="example/assets/images/ui_guard.png" height="100" alt="UI Guard Package" />
 </p>
 
 <p align="center">
@@ -32,6 +32,7 @@ In many apps, you need to control access to certain parts of your UI:
 - 🔄 Easily update roles at runtime
 - 📦 Pure Dart — no platform dependencies
 - ♻️ Works with any state management
+- ⏰ Time-based UI control using cron-style schedules
 
 ---
 
@@ -147,7 +148,8 @@ A widget that shows or hides its content based on a cron-style schedule (e.g., b
 ##### 🧠 How It Works
 Supports cron syntax with 5 fields:
 
-![Cron Schedule Diagram](example/assets/images/cron_schedule_diagram.png)
+ <img src="example/assets/images/cron_schedule_diagram.png" width="700" height="700" alt="Buy Me a Coffee QR Code">
+
 
 
 
@@ -188,6 +190,7 @@ Here are some common scenarios where `ui_guard` is useful:
 | Combined logic            | Use roles + permissions + runtime conditions |
 | Developer override	      |Skip restrictions in development or test |
 | Time-based access 	      |Display banners or UI only within a defined time range `TimedAccessGuard` |
+| Scheduled access          | Control UI visibility based on cron-style schedules using `ScheduleGuard` |
 
 
 
@@ -225,7 +228,7 @@ If you find `ui_guard` helpful, consider supporting me!
 Prefer mobile? Scan the QR code below to support me directly:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/99db4bcd-9784-4947-91cc-073977262e89" width="180" alt="Buy Me a Coffee QR Code">
+  <img src="example/assets/images/bmc_qr.png" width="180" alt="Buy Me a Coffee QR Code">
 </p>
 
 
