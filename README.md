@@ -140,6 +140,36 @@ TimedAccessGuard(
 
 ```
 
+#### 🕒 ScheduleGuard
+
+A widget that shows or hides its content based on a cron-style schedule (e.g., business hours, weekly timing).
+
+##### 🧠 How It Works
+Supports cron syntax with 5 fields:
+
+![Cron Schedule Diagram](example/assets/images/cron_schedule_diagram.png)
+
+
+
+- Automatically re-evaluates every minute or custom interval via checkInterval.
+- Invalid cron formats display a helpful error message.
+
+##### Use Cases of `ScheduleGuard`
+- 🕘 Time-gate access to features (e.g. booking, chat, forms)
+- 🏷️ Show banners during flash sales or promotional hours
+- 🛠️ Hide UI during maintenance or blackout windows
+- ⏰ Enable actions only during working/business hours
+- 📢 Display reminders or alerts at scheduled times
+
+```dart
+ScheduleGuard(
+  schedule: "0 9 * * 1-5", // Every weekday at 9:00 AM
+  builder: (_) => Text("Business is open!"),
+  fallbackBuilder: (_) => Text("Closed right now."),
+)
+
+```
+
 ## 📱 Example App
 Explore the full working example in the [`/example`](example) directory.
 
