@@ -96,4 +96,93 @@ class GuardUtils {
       yield DateTime.now();
     }
   }
+
+  /// Checks if the current time matches the cron-style schedule.
+  /// Returns false if the schedule string is invalid.
+  static bool isInSchedule(String cron) {
+    try {
+      final now = DateTime.now();
+      final parts = cron.trim().split(RegExp(r'\s+'));
+
+      if (parts.length != 5) return false;
+
+      final minute = parts[0];
+      final hour = parts[1];
+      final dayOfMonth = parts[2];
+      final month = parts[3];
+      final dayOfWeek = parts[4];
+
+      bool match(String pattern, int current) {
+        if (pattern == '*') return true;
+        if (pattern.contains(',')) {
+          return pattern.split(',').any((p) => match(p, current));
+        }
+        if (pattern.contains('-')) {
+          final rangeParts = pattern.split('-');
+          if (rangeParts.length != 2) return false;
+          final start = int.tryParse(rangeParts[0]);
+          final end = int.tryParse(rangeParts[1]);
+          if (start == null || end == null) return false;
+          return current >= start && current <= end;
+        }
+        final value = int.tryParse(pattern);
+        return value != null && value == current;
+      }
+
+      // Note: Dart's DateTime weekday: Monday=1 ... Sunday=7
+      // Cron dayOfWeek: Sunday=0 or 7, Monday=1
+      int cronWeekday = now.weekday % 7; // Sunday=0
+      return match(minute, now.minute) &&
+          match(hour, now.hour) &&
+          match(dayOfMonth, now.day) &&
+          match(month, now.month) &&
+          match(dayOfWeek, cronWeekday);
+    } catch (e) {
+      // On any error, consider schedule not matching
+      return false;
+    }
+  }
+
+  /// Stream emitting if current time matches the schedule on every [interval].
+  /// Safely handles exceptions and emits false if schedule invalid.
+  static Stream<bool> scheduleStream(String cron, Duration interval) async* {
+    yield isInSchedule(cron);
+    await for (final _ in Stream.periodic(interval)) {
+      yield isInSchedule(cron);
+    }
+  }
+
+  // Validate cron string format (5 parts, valid ranges etc.)
+  static bool isValidCron(String cron) {
+    try {
+      final parts = cron.trim().split(RegExp(r'\s+'));
+      if (parts.length != 5) return false;
+
+      bool validPart(String part, int min, int max) {
+        if (part == '*') return true;
+        for (final token in part.split(',')) {
+          if (token.contains('-')) {
+            final range = token.split('-');
+            if (range.length != 2) return false;
+            final start = int.tryParse(range[0]);
+            final end = int.tryParse(range[1]);
+            if (start == null || end == null) return false;
+            if (start < min || end > max || start > end) return false;
+          } else {
+            final val = int.tryParse(token);
+            if (val == null || val < min || val > max) return false;
+          }
+        }
+        return true;
+      }
+
+      return validPart(parts[0], 0, 59) && // minute
+          validPart(parts[1], 0, 23) && // hour
+          validPart(parts[2], 1, 31) && // day of month
+          validPart(parts[3], 1, 12) && // month
+          validPart(parts[4], 0, 7); // day of week (0=Sun,7=Sun)
+    } catch (_) {
+      return false;
+    }
+  }
 }
