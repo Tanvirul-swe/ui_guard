@@ -19,6 +19,7 @@ In many apps, you need to control access to certain parts of your UI:
 - Show settings only to admins
 - Render upgrade buttons for guests
 - Show/hide widgets based on subscription level
+- Schedule-based UI control like a cron job style
 
 `ui_guard` lets you do this easily and declaratively — using only Dart.
 
