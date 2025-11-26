@@ -1,4 +1,5 @@
 import 'package:example/helper/guard_setup.dart';
+import 'package:example/pages/shedule_guard_page.dart';
 import 'package:example/pages/timed_access_page.dart';
 import 'package:example/widget/combined_guard_panel.dart';
 import 'package:example/widget/permission_panel.dart';
@@ -103,6 +104,18 @@ class _RoleHomePageState extends State<RoleHomePage> {
               );
             },
             label: Text("Go to Timed Access Page"),
+            icon: Icon(Icons.timer_outlined),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ScheduleGuardTestPage(),
+                ),
+              );
+            },
+            label: Text("Go to Sheduled Access Page"),
             icon: Icon(Icons.timer_outlined),
           ),
         ],

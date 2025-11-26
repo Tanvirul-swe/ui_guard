@@ -8,3 +8,4 @@ export 'src/core/guard_config.dart';
 export 'src/widgets/combined_guard.dart';
 export 'src/core/guard_utils.dart';
 export 'src/widgets/time_access_guard.dart';
+export 'src/widgets/shedule_guard.dart';

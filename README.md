@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="https://github.com/user-attachments/assets/59d153fd-40d7-4cef-8e5f-b108ad6515dc" height="100" alt="UI Guard Package" />
+<img src="example/assets/images/ui_guard.png" height="100" alt="UI Guard Package" />
 </p>
 
 <p align="center">
@@ -19,6 +19,7 @@ In many apps, you need to control access to certain parts of your UI:
 - Show settings only to admins
 - Render upgrade buttons for guests
 - Show/hide widgets based on subscription level
+- Schedule-based UI control like a cron job style
 
 `ui_guard` lets you do this easily and declaratively — using only Dart.
 
@@ -32,6 +33,7 @@ In many apps, you need to control access to certain parts of your UI:
 - 🔄 Easily update roles at runtime
 - 📦 Pure Dart — no platform dependencies
 - ♻️ Works with any state management
+- ⏰ Time-based UI control using cron-style schedules
 
 ---
 
@@ -74,11 +76,11 @@ AccessGuard(
 Use when you want to show/hide a single widget inline.
 
 ```dart
-AccessGuard(
+RoleBasedView(
   guard: guard,
-  requiredRoles: ['admin'],
-  builder: (_) => const Text('Admin Panel'),
-  fallbackBuilder: (_) => const Text('Access Denied'),
+  requiredRoles: ['admin', 'moderator'],
+  child: const Text('Admin & Moderator Content'),
+  fallback: const Text('You do not have permission to view this content.'),
 );
 ```
 
@@ -140,6 +142,37 @@ TimedAccessGuard(
 
 ```
 
+#### 🕒 ScheduleGuard
+
+A widget that shows or hides its content based on a cron-style schedule (e.g., business hours, weekly timing).
+
+##### 🧠 How It Works
+Supports cron syntax with 5 fields:
+
+ <img src="example/assets/images/cron_schedule_diagram.png" width="700" height="700" alt="Buy Me a Coffee QR Code">
+
+
+
+
+- Automatically re-evaluates every minute or custom interval via checkInterval.
+- Invalid cron formats display a helpful error message.
+
+##### Use Cases of `ScheduleGuard`
+- 🕘 Time-gate access to features (e.g. booking, chat, forms)
+- 🏷️ Show banners during flash sales or promotional hours
+- 🛠️ Hide UI during maintenance or blackout windows
+- ⏰ Enable actions only during working/business hours
+- 📢 Display reminders or alerts at scheduled times
+
+```dart
+ScheduleGuard(
+  schedule: "0 9 * * 1-5", // Every weekday at 9:00 AM
+  builder: (_) => Text("Business is open!"),
+  fallbackBuilder: (_) => Text("Closed right now."),
+)
+
+```
+
 ## 📱 Example App
 Explore the full working example in the [`/example`](example) directory.
 
@@ -156,8 +189,9 @@ Here are some common scenarios where `ui_guard` is useful:
 | Read-only vs edit access  | Conditionally render buttons or fields          |
 | Subscription tiers        | Control access with `['free', 'premium', 'pro']` roles |
 | Combined logic            | Use roles + permissions + runtime conditions |
-| Developer override	      |Skip restrictions in development or test |
-| Time-based access 	      |Display banners or UI only within a defined time range `TimedAccessGuard` |
+| Developer override	      | Skip restrictions in development or test |
+| Time-based access 	      | Display banners or UI only within a defined time range `TimedAccessGuard` |
+| Scheduled access          | Control UI visibility based on cron-style schedules using `ScheduleGuard` |
 
 
 
@@ -195,7 +229,7 @@ If you find `ui_guard` helpful, consider supporting me!
 Prefer mobile? Scan the QR code below to support me directly:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/99db4bcd-9784-4947-91cc-073977262e89" width="180" alt="Buy Me a Coffee QR Code">
+  <img src="example/assets/images/bmc_qr.png" width="180" alt="Buy Me a Coffee QR Code">
 </p>
 
 
