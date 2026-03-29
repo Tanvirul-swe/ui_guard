@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../core/access_decision.dart';
 import '../core/guard.dart';
 import '../core/guard_utils.dart';
 
@@ -6,21 +8,17 @@ import '../core/guard_utils.dart';
 /// and custom conditions into a single guard.
 class CombinedGuard extends StatelessWidget {
   final Guard guard;
-
-  /// Required roles the user must have.
   final List<String> requiredRoles;
-
-  /// Required permissions the user must have.
   final List<String> requiredPermissions;
-
-  /// Optional additional custom condition (e.g., environment flags, business rules).
   final bool Function()? condition;
-
-  /// Widget shown if access is granted.
   final WidgetBuilder builder;
-
-  /// Optional fallback if access is denied.
   final WidgetBuilder? fallbackBuilder;
+
+  /// Optional callback with access decision details.
+  final void Function(AccessDecision decision)? onDecision;
+
+  /// If provided, rebuilds whenever this listenable updates.
+  final Listenable? rebuildListenable;
 
   const CombinedGuard({
     super.key,
@@ -30,21 +28,34 @@ class CombinedGuard extends StatelessWidget {
     this.condition,
     required this.builder,
     this.fallbackBuilder,
+    this.onDecision,
+    this.rebuildListenable,
   });
-
-  bool _hasAccess() {
-    return GuardUtils.evaluate(
-      guard: guard,
-      requiredRoles: requiredRoles,
-      requiredPermissions: requiredPermissions,
-      condition: condition,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
-    return _hasAccess()
-        ? builder(context)
-        : (fallbackBuilder?.call(context) ?? const SizedBox.shrink());
+    Widget buildGuard() {
+      final decision = GuardUtils.evaluateDetailed(
+        guard: guard,
+        requiredRoles: requiredRoles,
+        requiredPermissions: requiredPermissions,
+        condition: condition,
+        policyName: 'combined_guard',
+      );
+      onDecision?.call(decision);
+
+      return decision.allowed
+          ? builder(context)
+          : (fallbackBuilder?.call(context) ?? const SizedBox.shrink());
+    }
+
+    if (rebuildListenable == null) {
+      return buildGuard();
+    }
+
+    return ListenableBuilder(
+      listenable: rebuildListenable!,
+      builder: (context, _) => buildGuard(),
+    );
   }
 }
