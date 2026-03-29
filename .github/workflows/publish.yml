@@ -1,0 +1,66 @@
+name: Publish to pub.dev
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pub.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Resolve target version
+        id: version
+        run: |
+          PUBSPEC_VERSION=$(awk '/^version: / {print $2}' pubspec.yaml)
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG_VERSION="${GITHUB_REF_NAME#v}"
+            echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+            echo "source=release" >> "$GITHUB_OUTPUT"
+          else
+            TAG_VERSION="$PUBSPEC_VERSION"
+            echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
+            echo "source=manual" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "pubspec_version=$PUBSPEC_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version matches tag
+        run: |
+          if [ "${{ steps.version.outputs.pubspec_version }}" != "${{ steps.version.outputs.tag_version }}" ]; then
+            echo "pubspec.yaml version (${{ steps.version.outputs.pubspec_version }}) does not match release tag (${{ steps.version.outputs.tag_version }})"
+            exit 1
+          fi
+
+      - name: Validate changelog contains version
+        run: |
+          grep -E "^## \[${{ steps.version.outputs.pubspec_version }}\]" CHANGELOG.md > /dev/null || {
+            echo "CHANGELOG.md is missing entry for version ${{ steps.version.outputs.pubspec_version }}"
+            exit 1
+          }
+
+      - name: Run analyzer and tests
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Verify package before publish
+        run: dart pub publish --dry-run
+
+      - name: Publish package
+        run: dart pub publish -f

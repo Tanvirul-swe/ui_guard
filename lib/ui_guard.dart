@@ -2,10 +2,17 @@ library ui_guard;
 
 export 'src/widgets/role_based_view.dart';
 export 'src/widgets/access_guard.dart';
+export 'src/widgets/guard_listenable_builder.dart';
+export 'src/widgets/policy_guard.dart';
 export 'src/core/role_guard.dart';
 export 'src/core/guard.dart';
+export 'src/core/guard_notifier.dart';
 export 'src/core/guard_config.dart';
 export 'src/widgets/combined_guard.dart';
 export 'src/core/guard_utils.dart';
+export 'src/core/access_decision.dart';
+export 'src/core/access_policy.dart';
+export 'src/core/guard_diagnostics.dart';
+export 'src/core/schedule_parser.dart';
 export 'src/widgets/time_access_guard.dart';
 export 'src/widgets/shedule_guard.dart';

@@ -34,6 +34,10 @@ In many apps, you need to control access to certain parts of your UI:
 - 📦 Pure Dart — no platform dependencies
 - ♻️ Works with any state management
 - ⏰ Time-based UI control using cron-style schedules
+- ⚡ Reactive guard updates with `GuardNotifier`
+- 🧾 Access diagnostics via `AccessDecision`
+- 🧩 Reusable named authorization policies with `AccessPolicy` + `PolicyGuard`
+- 🌍 Advanced cron support (`*/5`, `MON-FRI`, `@daily`) with optional UTC mode
 
 ---
 
@@ -43,7 +47,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  ui_guard: ^1.0.0
+  ui_guard: ^1.1.0
 ```
 
 
@@ -173,6 +177,60 @@ ScheduleGuard(
 
 ```
 
+## 🆕 New in v1.1.0
+
+### Reactive access updates
+```dart
+final guard = GuardNotifier();
+
+AccessGuard(
+  guard: guard,
+  rebuildListenable: guard,
+  requiredRoles: const ['admin'],
+  builder: (_) => const Text('Admin'),
+)
+```
+
+### Reusable policies
+```dart
+const manageUsersPolicy = AccessPolicy(
+  name: 'manage_users',
+  requiredRoles: ['admin'],
+  requiredPermissions: ['users.edit'],
+);
+
+PolicyGuard(
+  guard: guard,
+  policy: manageUsersPolicy,
+  rebuildListenable: guard,
+  builder: (_) => const Text('User Manager'),
+  fallbackBuilder: (_) => const Text('No Access'),
+);
+```
+
+### Decision diagnostics
+```dart
+CombinedGuard(
+  guard: guard,
+  requiredRoles: const ['manager'],
+  onDecision: (decision) {
+    if (!decision.allowed) {
+      debugPrint('Missing roles: ${decision.missingRoles}');
+    }
+  },
+  builder: (_) => const Text('Manager Area'),
+)
+```
+
+### Advanced schedules
+```dart
+ScheduleGuard(
+  schedule: '*/15 9-17 * * MON-FRI',
+  useUtc: true,
+  builder: (_) => const Text('Business hours in UTC'),
+)
+```
+
 ## 📱 Example App
 Explore the full working example in the [`/example`](example) directory.
 
@@ -195,6 +253,17 @@ Here are some common scenarios where `ui_guard` is useful:
 
 
 
+## 🚀 CI/CD & Auto Publish
+
+This repository includes GitHub Actions workflows:
+
+- `CI` (`.github/workflows/ci.yml`) runs format, analyze, and test checks.
+- `Publish to pub.dev` (`.github/workflows/publish.yml`) publishes automatically on GitHub Release publish.
+
+To enable publishing, configure pub.dev Trusted Publisher for this GitHub repository and use a protected `pub.dev` environment in GitHub.
+
+Follow `RELEASING.md` before creating the GitHub Release.
+
 ## 💬 Contributing
 
 Contributions are welcome!
@@ -214,7 +283,7 @@ To contribute:
 
 ## 🛠️ Dart SDK Version
 
-This package requires Dart SDK version **>=2.14**.
+This package requires Dart SDK version **>=3.0.0**.
 
 Please ensure your Flutter and Dart versions meet this requirement.
 

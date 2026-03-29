@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0]
+### Added
+- `GuardNotifier` for reactive access-control updates via `ChangeNotifier`.
+- `AccessPolicy` and `PolicyGuard` for reusable named authorization rules.
+- `AccessDecision` and decision callbacks for richer allow/deny diagnostics.
+- `ScheduleParser` with advanced cron support (`*/step`, aliases like `MON`, and macros like `@daily`).
+- GitHub Actions workflows for CI checks and automated pub.dev publishing.
+
+### Improved
+- `AccessGuard`, `RoleBasedView`, and `CombinedGuard` now support optional `rebuildListenable` and `onDecision` callbacks.
+- `ScheduleGuard` now supports UTC evaluation and clearer cron validation messages.
+- Added `RELEASING.md` checklist to streamline merge-to-pub.dev publishing.
+
+---
+
+## [1.0.4]
+### Updated
+- Upgraded `flutter_lints` to `^6.0.0` in both package and example project to keep lint rules current.
+
+---
 
 ## [1.0.3]
 ### Added
@@ -24,7 +44,7 @@
 
 ---
 
-## [1.0.0] 
+## [1.0.0]
 ### 🎉 Initial Release
 - Role-based UI control for Flutter
 - Includes:
