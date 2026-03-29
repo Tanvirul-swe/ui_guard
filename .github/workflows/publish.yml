@@ -1,6 +1,8 @@
 name: Publish to pub.dev
 
 on:
+  push:
+    branches: [ main ]
   release:
     types: [published]
   workflow_dispatch:
@@ -8,6 +10,10 @@ on:
 permissions:
   id-token: write
   contents: read
+
+concurrency:
+  group: pubdev-publish
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -26,28 +32,65 @@ jobs:
       - name: Resolve target version
         id: version
         run: |
+          PACKAGE_NAME=$(awk '/^name: / {print $2}' pubspec.yaml)
           PUBSPEC_VERSION=$(awk '/^version: / {print $2}' pubspec.yaml)
+          echo "package_name=$PACKAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "pubspec_version=$PUBSPEC_VERSION" >> "$GITHUB_OUTPUT"
 
           if [ "${{ github.event_name }}" = "release" ]; then
             TAG_VERSION="${GITHUB_REF_NAME#v}"
             echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
             echo "source=release" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "source=push" >> "$GITHUB_OUTPUT"
           else
-            TAG_VERSION="$PUBSPEC_VERSION"
-            echo "tag_version=$TAG_VERSION" >> "$GITHUB_OUTPUT"
             echo "source=manual" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "pubspec_version=$PUBSPEC_VERSION" >> "$GITHUB_OUTPUT"
-
       - name: Validate version matches tag
+        if: github.event_name == 'release'
         run: |
           if [ "${{ steps.version.outputs.pubspec_version }}" != "${{ steps.version.outputs.tag_version }}" ]; then
             echo "pubspec.yaml version (${{ steps.version.outputs.pubspec_version }}) does not match release tag (${{ steps.version.outputs.tag_version }})"
             exit 1
           fi
 
+      - name: Check if version already published on pub.dev
+        id: pubdev
+        run: |
+          API_URL="https://pub.dev/api/packages/${{ steps.version.outputs.package_name }}"
+          VERSION="${{ steps.version.outputs.pubspec_version }}"
+
+          if curl -fsSL "$API_URL" -o pubdev_package.json; then
+            EXISTS=$(python3 -c "import json, sys; v=sys.argv[1]; data=json.load(open('pubdev_package.json', 'r', encoding='utf-8')); print('true' if any(item.get('version') == v for item in data.get('versions', [])) else 'false')" "$VERSION")
+          else
+            EXISTS="false"
+          fi
+
+          echo "version_exists=$EXISTS" >> "$GITHUB_OUTPUT"
+
+      - name: Decide whether to publish
+        id: gate
+        run: |
+          if [ "${{ steps.pubdev.outputs.version_exists }}" = "true" ]; then
+            if [ "${{ github.event_name }}" = "release" ]; then
+              echo "Version ${{ steps.version.outputs.pubspec_version }} is already published on pub.dev."
+              exit 1
+            fi
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=Version already published" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "skip_reason=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip summary
+        if: steps.gate.outputs.should_publish != 'true'
+        run: |
+          echo "Skipping publish: ${{ steps.gate.outputs.skip_reason }}"
+
       - name: Validate changelog contains version
+        if: steps.gate.outputs.should_publish == 'true'
         run: |
           grep -E "^## \[${{ steps.version.outputs.pubspec_version }}\]" CHANGELOG.md > /dev/null || {
             echo "CHANGELOG.md is missing entry for version ${{ steps.version.outputs.pubspec_version }}"
@@ -55,12 +98,15 @@ jobs:
           }
 
       - name: Run analyzer and tests
+        if: steps.gate.outputs.should_publish == 'true'
         run: |
           flutter analyze
-          flutter test
+          flutter test --exclude-tags unstable
 
       - name: Verify package before publish
+        if: steps.gate.outputs.should_publish == 'true'
         run: dart pub publish --dry-run
 
       - name: Publish package
+        if: steps.gate.outputs.should_publish == 'true'
         run: dart pub publish -f

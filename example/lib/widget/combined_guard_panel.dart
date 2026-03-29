@@ -5,11 +5,15 @@ import 'package:ui_guard/ui_guard.dart';
 class CombinedGuardPanel extends StatelessWidget {
   final Guard guard;
   final bool isInternalMode;
+  final Listenable? rebuildListenable;
+  final ValueChanged<AccessDecision>? onDecision;
 
   const CombinedGuardPanel({
     super.key,
     required this.guard,
     required this.isInternalMode,
+    this.rebuildListenable,
+    this.onDecision,
   });
 
   @override
@@ -19,6 +23,8 @@ class CombinedGuardPanel extends StatelessWidget {
       requiredRoles: ['admin'],
       requiredPermissions: ['edit_team'],
       condition: () => isInternalMode,
+      rebuildListenable: rebuildListenable,
+      onDecision: onDecision,
       builder:
           (_) => buildPanel(
             title: 'CombinedGuard',

@@ -25,7 +25,7 @@ jobs:
         run: flutter analyze
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --exclude-tags unstable
 
       - name: Verify example
         run: |

@@ -1,5 +1,3 @@
-library ui_guard;
-
 export 'src/widgets/role_based_view.dart';
 export 'src/widgets/access_guard.dart';
 export 'src/widgets/guard_listenable_builder.dart';

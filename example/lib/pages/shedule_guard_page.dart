@@ -6,30 +6,52 @@ class ScheduleGuardTestPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Example: schedule every minute at second 0 (simulate running every minute)
-    // Since we only have minute precision, let's set schedule to always true for testing
-    // e.g., every minute and hour (* * * * *)
-    const schedule = '* * * * *';
-
     return Scaffold(
       appBar: AppBar(title: const Text('ScheduleGuard Test')),
-      body: Center(
-        child: ScheduleGuard(
-          schedule: schedule,
-          checkInterval: const Duration(
-            seconds: 10,
-          ), // Check every 10 seconds for quick feedback
-          builder:
-              (_) => const Text(
-                'Access Granted: Within schedule',
-                style: TextStyle(color: Colors.green, fontSize: 18),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ScheduleGuard(
+                schedule: '* * * * *',
+                checkInterval: const Duration(seconds: 10),
+                builder:
+                    (_) => const Text(
+                      'Basic cron: Access Granted',
+                      style: TextStyle(color: Colors.green, fontSize: 18),
+                    ),
+                fallbackBuilder:
+                    (_) => const Text(
+                      'Basic cron: Access Denied',
+                      style: TextStyle(color: Colors.red, fontSize: 18),
+                    ),
               ),
-          fallbackBuilder:
-              (_) => const Text(
-                'Access Denied: Outside schedule',
-                style: TextStyle(color: Colors.red, fontSize: 18),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ScheduleGuard(
+                schedule: '*/1 * * * *',
+                useUtc: true,
+                checkInterval: const Duration(seconds: 10),
+                builder:
+                    (_) => const Text(
+                      'Advanced cron + UTC: Access Granted',
+                      style: TextStyle(color: Colors.green, fontSize: 18),
+                    ),
+                fallbackBuilder:
+                    (_) => const Text(
+                      'Advanced cron + UTC: Access Denied',
+                      style: TextStyle(color: Colors.red, fontSize: 18),
+                    ),
               ),
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
