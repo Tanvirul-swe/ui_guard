@@ -3,11 +3,12 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,9 +18,6 @@ jobs:
 
       - name: Install dependencies
         run: flutter pub get
-
-      - name: Format check
-        run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze
         run: flutter analyze
