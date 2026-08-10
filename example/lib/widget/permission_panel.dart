@@ -4,18 +4,34 @@ import 'package:ui_guard/ui_guard.dart';
 
 class PermissionPanel extends StatelessWidget {
   final Guard guard;
-  const PermissionPanel({super.key, required this.guard});
+  final Listenable? rebuildListenable;
+  final ValueChanged<AccessDecision>? onDecision;
+
+  const PermissionPanel({
+    super.key,
+    required this.guard,
+    this.rebuildListenable,
+    this.onDecision,
+  });
 
   @override
   Widget build(BuildContext context) {
     return RoleBasedView(
       guard: guard,
       requiredRoles: ['guest'],
+      rebuildListenable: rebuildListenable,
+      onDecision: onDecision,
+      fallback: buildPanel(
+        title: 'RoleBasedView',
+        icon: Icons.block,
+        color: Colors.redAccent,
+        message: 'Denied: switch role back to guest to view this content.',
+      ),
       child: buildPanel(
-        title: 'RoleBasedView - Guest Only',
+        title: 'RoleBasedView',
         icon: Icons.person_outline,
         color: Colors.orange,
-        message: 'Welcome Guest. This is guest-only content.',
+        message: 'Allowed: this content is visible for the guest role.',
       ),
     );
   }

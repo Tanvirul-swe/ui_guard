@@ -1,18 +1,21 @@
+@Tags(['unstable'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_guard/ui_guard.dart';
 
 void main() {
+  Future<void> disposeTree(WidgetTester tester) async {
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+  }
+
   group('ScheduleGuard Widget Tests', () {
     testWidgets('renders builder when schedule is valid and matches time',
         (WidgetTester tester) async {
-      // Use a schedule that matches current time for test simplicity
-      final now = DateTime.now();
-      final minute = now.minute;
-      final hour = now.hour;
-
-      // A cron string that matches current hour and minute, wildcard for others
-      final schedule = '$minute $hour * * *';
+      // Always matches any valid runtime clock value.
+      const schedule = '* * * * *';
 
       await tester.pumpWidget(
         MaterialApp(
@@ -28,16 +31,13 @@ void main() {
       // Since schedule matches, builder widget should appear
       expect(find.text('Access Granted'), findsOneWidget);
       expect(find.text('Access Denied'), findsNothing);
+      await disposeTree(tester);
     });
 
     testWidgets('renders fallback when schedule does not match time',
         (WidgetTester tester) async {
-      // Use a schedule that will NOT match current time (minute + 1)
-      final now = DateTime.now();
-      final invalidMinute = (now.minute + 1) % 60;
-      final hour = now.hour;
-
-      final schedule = '$invalidMinute $hour * * *';
+      // Deterministic non-match for almost all execution times.
+      const schedule = '0 0 1 1 *';
 
       await tester.pumpWidget(
         MaterialApp(
@@ -53,6 +53,7 @@ void main() {
       // Since schedule does not match, fallback widget should appear
       expect(find.text('Access Denied'), findsOneWidget);
       expect(find.text('Access Granted'), findsNothing);
+      await disposeTree(tester);
     });
 
     testWidgets('renders error message when schedule is invalid',
@@ -70,14 +71,12 @@ void main() {
 
       expect(find.textContaining('Invalid schedule format'), findsOneWidget);
       expect(find.text('Access Granted'), findsNothing);
+      await disposeTree(tester);
     });
 
     testWidgets('renders empty container if fallbackBuilder is null',
         (WidgetTester tester) async {
-      final now = DateTime.now();
-      final invalidMinute = (now.minute + 1) % 60;
-      final hour = now.hour;
-      final schedule = '$invalidMinute $hour * * *';
+      const schedule = '0 0 1 1 *';
 
       await tester.pumpWidget(
         MaterialApp(
@@ -91,6 +90,7 @@ void main() {
       // No fallbackBuilder provided, so empty widget shown when no access
       expect(find.text('Access Granted'), findsNothing);
       expect(find.byType(SizedBox), findsWidgets);
+      await disposeTree(tester);
     });
   });
 }

@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:ui_guard/ui_guard.dart';
+
+import '../core/access_decision.dart';
+import '../core/guard.dart';
+import '../core/role_guard.dart';
 
 /// A widget that shows [child] only if the current user has any of the [requiredRoles].
-///
-/// Optionally, a [fallback] widget can be shown if access is denied.
-/// You can override the default access logic using [accessEvaluator].
 class RoleBasedView extends StatelessWidget {
-  /// The widget to display if access is granted.
   final Widget child;
-
-  /// The roles required to show the [child].
   final List<String> requiredRoles;
-
-  /// The widget to display if access is denied.
   final Widget? fallback;
-
-  /// Optional function to override the default role-based access logic.
-  final bool Function(List<String> userRoles, List<String> requiredRoles)?
-      accessEvaluator;
-
-  /// The Guard instance holding current roles.
+  final bool Function(List<String> userRoles, List<String> requiredRoles)? accessEvaluator;
   final Guard guard;
+
+  /// Optional callback with access decision details.
+  final void Function(AccessDecision decision)? onDecision;
+
+  /// If provided, rebuilds whenever this listenable updates.
+  final Listenable? rebuildListenable;
 
   const RoleBasedView({
     super.key,
@@ -29,16 +25,38 @@ class RoleBasedView extends StatelessWidget {
     this.fallback,
     this.accessEvaluator,
     required this.guard,
+    this.onDecision,
+    this.rebuildListenable,
   });
 
   @override
   Widget build(BuildContext context) {
-    final roles = guard.currentRoles;
+    Widget buildGuard() {
+      final roles = guard.currentRoles;
+      final hasAccess = accessEvaluator != null
+          ? accessEvaluator!(roles, requiredRoles)
+          : RoleGuard.hasAnyRole(roles, requiredRoles);
 
-    final hasAccess = accessEvaluator != null
-        ? accessEvaluator!(roles, requiredRoles)
-        : RoleGuard.hasAnyRole(roles, requiredRoles);
+      final missing = hasAccess
+          ? const <String>[]
+          : requiredRoles.where((role) => !roles.contains(role)).toList(growable: false);
 
-    return hasAccess ? child : (fallback ?? const SizedBox.shrink());
+      onDecision?.call(
+        hasAccess
+            ? AccessDecision.allow()
+            : AccessDecision.deny(missingRoles: missing, reasonCode: 'role_based_view_denied'),
+      );
+
+      return hasAccess ? child : (fallback ?? const SizedBox.shrink());
+    }
+
+    if (rebuildListenable == null) {
+      return buildGuard();
+    }
+
+    return ListenableBuilder(
+      listenable: rebuildListenable!,
+      builder: (context, _) => buildGuard(),
+    );
   }
 }

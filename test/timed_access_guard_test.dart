@@ -1,10 +1,19 @@
+@Tags(['unstable'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_guard/ui_guard.dart';
 
 void main() {
+  Future<void> disposeTree(WidgetTester tester) async {
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+  }
+
   group('TimedAccessGuard Widget Tests', () {
-    testWidgets('shows builder when current time is within the range', (tester) async {
+    testWidgets('shows builder when current time is within the range',
+        (tester) async {
       final now = DateTime.now();
       final start = now.subtract(const Duration(minutes: 1));
       final end = now.add(const Duration(minutes: 1));
@@ -23,9 +32,11 @@ void main() {
 
       expect(find.text('Access Granted'), findsOneWidget);
       expect(find.text('Access Denied'), findsNothing);
+      await disposeTree(tester);
     });
 
-    testWidgets('shows fallbackBuilder when current time is before the start', (tester) async {
+    testWidgets('shows fallbackBuilder when current time is before the start',
+        (tester) async {
       final now = DateTime.now();
       final start = now.add(const Duration(minutes: 1));
       final end = now.add(const Duration(minutes: 5));
@@ -44,9 +55,11 @@ void main() {
 
       expect(find.text('Access Denied'), findsOneWidget);
       expect(find.text('Access Granted'), findsNothing);
+      await disposeTree(tester);
     });
 
-    testWidgets('shows fallbackBuilder when current time is after the end', (tester) async {
+    testWidgets('shows fallbackBuilder when current time is after the end',
+        (tester) async {
       final now = DateTime.now();
       final start = now.subtract(const Duration(minutes: 5));
       final end = now.subtract(const Duration(minutes: 1));
@@ -65,9 +78,11 @@ void main() {
 
       expect(find.text('Access Denied'), findsOneWidget);
       expect(find.text('Access Granted'), findsNothing);
+      await disposeTree(tester);
     });
 
-    testWidgets('onTimeUpdate callback gets called with correct time left', (tester) async {
+    testWidgets('onTimeUpdate callback gets called with correct time left',
+        (tester) async {
       final now = DateTime.now();
       final end = now.add(const Duration(seconds: 10));
       final start = now.subtract(const Duration(seconds: 10));
@@ -93,6 +108,7 @@ void main() {
 
       expect(receivedTimeLeft, isNotNull);
       expect(receivedTimeLeft!.inSeconds, lessThanOrEqualTo(10));
+      await disposeTree(tester);
     });
   });
 }
