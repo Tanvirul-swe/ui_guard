@@ -1,5 +1,10 @@
 # Changelog
+## [1.1.1]
 
+### Improved
+- README file improve
+
+---
 ## [1.1.0]
 ### Added
 - `GuardNotifier` for reactive access-control updates via `ChangeNotifier`.
