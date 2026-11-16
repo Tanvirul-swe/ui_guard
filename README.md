@@ -8,11 +8,11 @@
   <a href="https://pub.dev/packages/ui_guard">
     <img src="https://img.shields.io/pub/v/ui_guard.svg" alt="Pub Version">
   </a>
-  <a href="https://github.com/Tanvirul-swe/ui_guard/actions">
-    <img src="https://github.com/Tanvirul-swe/ui_guard/actions/workflows/main.yml/badge.svg" alt="Build">
+  <a href="https://github.com/frozenlabx/ui_guard/actions">
+    <img src="https://github.com/frozenlabx/ui_guard/actions/workflows/ci.yml/badge.svg" alt="Build">
   </a>
-  <a href="https://github.com/Tanvirul-swe/ui_guard">
-    <img src="https://img.shields.io/github/stars/Tanvirul-swe/ui_guard.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="GitHub Stars">
+  <a href="https://github.com/frozenlabx/ui_guard">
+    <img src="https://img.shields.io/github/stars/frozenlabx/ui_guard.svg?style=flat&logo=github&colorB=deeppink&label=stars" alt="GitHub Stars">
   </a>
   <a href="https://flutter.dev">
     <img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website">
@@ -862,8 +862,8 @@ Contributions are welcome! 🎉
 
 Useful links:
 
-* 🌐 [GitHub Repository](https://github.com/Tanvirul-swe/ui_guard)
-* 🐛 [Report an Issue](https://github.com/Tanvirul-swe/ui_guard/issues)
+* 🌐 [GitHub Repository](https://github.com/frozenlabx/ui_guard)
+* 🐛 [Report an Issue](https://github.com/frozenlabx/ui_guard/issues)
 
 To contribute:
 
@@ -904,6 +904,8 @@ Your support helps maintain and improve `ui_guard`. ❤️
 **MD. TANVIRUL ISLAM**
 
 GitHub: [Tanvirul-swe](https://github.com/Tanvirul-swe)
+
+Organization: [FrozenLab](https://github.com/frozenlabx)
 
 ---
 
