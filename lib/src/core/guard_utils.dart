@@ -64,6 +64,57 @@ class GuardUtils {
     return decision;
   }
 
+  /// Asynchronously evaluates access using a [roleFuture].
+  static Future<bool> evaluateAsync({
+    required Future<List<String>> roleFuture,
+    List<String> requiredRoles = const [],
+    List<String> requiredPermissions = const [],
+    bool Function()? condition,
+  }) async {
+    final decision = await evaluateDetailedAsync(
+      roleFuture: roleFuture,
+      requiredRoles: requiredRoles,
+      requiredPermissions: requiredPermissions,
+      condition: condition,
+    );
+    return decision.allowed;
+  }
+
+  /// Asynchronously evaluates detailed access using a [roleFuture].
+  static Future<AccessDecision> evaluateDetailedAsync({
+    required Future<List<String>> roleFuture,
+    List<String> requiredRoles = const [],
+    List<String> requiredPermissions = const [],
+    bool Function()? condition,
+    String? policyName,
+  }) async {
+    if (GuardConfig.developerOverrideEnabled) {
+      return AccessDecision.allow();
+    }
+
+    try {
+      final roles = await roleFuture;
+      final guard = Guard()..setUserRoles(roles);
+      return evaluateDetailed(
+        guard: guard,
+        requiredRoles: requiredRoles,
+        requiredPermissions: requiredPermissions,
+        condition: condition,
+        policyName: policyName,
+      );
+    } catch (_) {
+      final decision = AccessDecision.deny(
+        failedCondition: true,
+        reasonCode: policyName ?? 'async_evaluation_error',
+      );
+      GuardDiagnostics.logDecision(
+        policyName ?? 'GuardUtils.evaluateDetailedAsync',
+        decision,
+      );
+      return decision;
+    }
+  }
+
   static bool evaluatePolicy({required Guard guard, required AccessPolicy policy}) {
     return evaluateDetailed(
       guard: guard,

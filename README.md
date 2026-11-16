@@ -69,6 +69,7 @@ For example:
 * 🕒 Cron-style scheduled UI access
 * 🌍 Optional UTC schedule evaluation
 * 📱 Responsive and device-based UI control with `DeviceTypeGuard`
+* ⚡ Asynchronous role loading with `AsyncGuard` (APIs, Secure Storage, Firebase/Auth)
 * 🔔 Access decision callbacks for logging and debugging
 
 ---
@@ -79,7 +80,7 @@ Add `ui_guard` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  ui_guard: ^1.1.0
+  ui_guard: ^1.2.0
 ```
 
 Then run:
@@ -145,6 +146,7 @@ can automatically rebuild.
 | Enable content only in a start/end time window  | `TimedAccessGuard`             |
 | Enable content using a cron schedule            | `ScheduleGuard`                |
 | Show/hide UI based on device type / screen size | `DeviceTypeGuard`              |
+| Load roles asynchronously from API / storage    | `AsyncGuard`                   |
 
 ---
 
@@ -662,6 +664,50 @@ DeviceTypeGuard(
 
 ---
 
+# ⚡ Asynchronous Role Loading with `AsyncGuard`
+
+`AsyncGuard` allows `ui_guard` to work seamlessly when user roles or permissions are not available immediately — such as when fetching from:
+* 🔐 Secure storage / SharedPreferences
+* 🌐 Remote backend REST / GraphQL APIs
+* 🔥 Firebase Auth / Supabase / OAuth identity providers
+
+### 🔧 Example: Issue #5 Planned API
+
+```dart
+AsyncGuard(
+  roleFuture: loadUserRolesFromServer(),
+  builder: (context, roles) => AccessGuard(
+    guard: Guard()..setUserRoles(roles),
+    requiredRoles: const ['admin'],
+    builder: (_) => const Text("Admin Dashboard"),
+    fallbackBuilder: (_) => const Text("Access Denied"),
+  ),
+);
+```
+
+### 🔧 Example: Direct Role Gating with `AsyncGuard.guard`
+
+```dart
+AsyncGuard.guard(
+  roleFuture: loadUserRolesFromServer(),
+  requiredRoles: const ['admin'],
+  loadingBuilder: (_) => const Center(child: CircularProgressIndicator()),
+  builder: (_) => const AdminDashboard(),
+  fallbackBuilder: (_) => const AccessDeniedView(),
+);
+```
+
+### 🔧 Example: Programmatic Async Evaluation
+
+```dart
+final hasAccess = await GuardUtils.evaluateAsync(
+  roleFuture: fetchUserRoles(),
+  requiredRoles: const ['admin'],
+);
+```
+
+---
+
 # 📱 Example App
 
 A complete working example is available in:
@@ -685,6 +731,7 @@ The example application demonstrates:
 * `TimedAccessGuard`
 * `ScheduleGuard`
 * `DeviceTypeGuard`
+* `AsyncGuard`
 * Developer override behavior
 
 You can explore the example project to understand how the different guards can work together in a real Flutter application.

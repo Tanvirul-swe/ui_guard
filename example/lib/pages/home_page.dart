@@ -1,3 +1,4 @@
+import 'package:example/pages/async_guard_page.dart';
 import 'package:example/pages/device_type_guard_page.dart';
 import 'package:example/pages/shedule_guard_page.dart';
 import 'package:example/pages/timed_access_page.dart';
@@ -241,6 +242,20 @@ class _RoleHomePageState extends State<RoleHomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => const DeviceTypeGuardPage(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              _NavigationCard(
+                title: 'AsyncGuard Page',
+                subtitle: 'Asynchronously load roles from API / storage.',
+                icon: Icons.cloud_sync,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AsyncGuardPage(),
                     ),
                   );
                 },

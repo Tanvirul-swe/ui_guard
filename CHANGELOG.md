@@ -1,4 +1,18 @@
 # Changelog
+## [1.2.0]
+
+### Added
+- `AsyncGuard`: Asynchronously load user roles and permissions from remote APIs, secure storage, or authentication services (e.g., Firebase, Supabase).
+- `DeviceTypeGuard`: Conditionally render UI based on device type (`mobile`, `tablet`, `desktop`, `web`) and platforms (`android`, `ios`, `macos`, `windows`, `linux`).
+- `DeviceType` enum and `DeviceBreakpoints` with customizable screen width breakpoints.
+- Programmatic async access evaluation methods: `GuardUtils.evaluateAsync` and `GuardUtils.evaluateDetailedAsync`.
+- Added interactive `DeviceTypeGuardPage` and `AsyncGuardPage` in the example app.
+
+### Improved
+- Comprehensive unit and widget test coverage for async and responsive guards.
+- Updated documentation and README widget recommendation table.
+
+---
 ## [1.1.1]
 
 ### Improved

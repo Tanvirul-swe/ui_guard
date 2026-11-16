@@ -16,3 +16,4 @@ export 'src/widgets/time_access_guard.dart';
 export 'src/widgets/shedule_guard.dart';
 export 'src/core/device_type.dart';
 export 'src/widgets/device_type_guard.dart';
+export 'src/widgets/async_guard.dart';
