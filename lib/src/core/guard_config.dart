@@ -1,3 +1,5 @@
+import 'device_type.dart';
+
 /// Configuration for ui_guard behavior.
 class GuardConfig {
   /// If true, all access restrictions are bypassed for development/testing.
@@ -13,4 +15,8 @@ class GuardConfig {
   /// ```
   /// Make sure to set it back to false before deploying to production.
   static bool developerOverrideEnabled = false;
+
+  /// Global default screen breakpoints used by [DeviceTypeGuard] and device evaluation.
+  /// Defaults to `DeviceBreakpoints(mobileBreakpoint: 600.0, tabletBreakpoint: 1024.0)`.
+  static DeviceBreakpoints deviceBreakpoints = const DeviceBreakpoints();
 }

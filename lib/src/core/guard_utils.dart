@@ -1,5 +1,9 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
 import 'access_decision.dart';
 import 'access_policy.dart';
+import 'device_type.dart';
 import 'guard.dart';
 import 'guard_config.dart';
 import 'guard_diagnostics.dart';
@@ -58,6 +62,57 @@ class GuardUtils {
 
     GuardDiagnostics.logDecision(policyName ?? 'GuardUtils.evaluateDetailed', decision);
     return decision;
+  }
+
+  /// Asynchronously evaluates access using a [roleFuture].
+  static Future<bool> evaluateAsync({
+    required Future<List<String>> roleFuture,
+    List<String> requiredRoles = const [],
+    List<String> requiredPermissions = const [],
+    bool Function()? condition,
+  }) async {
+    final decision = await evaluateDetailedAsync(
+      roleFuture: roleFuture,
+      requiredRoles: requiredRoles,
+      requiredPermissions: requiredPermissions,
+      condition: condition,
+    );
+    return decision.allowed;
+  }
+
+  /// Asynchronously evaluates detailed access using a [roleFuture].
+  static Future<AccessDecision> evaluateDetailedAsync({
+    required Future<List<String>> roleFuture,
+    List<String> requiredRoles = const [],
+    List<String> requiredPermissions = const [],
+    bool Function()? condition,
+    String? policyName,
+  }) async {
+    if (GuardConfig.developerOverrideEnabled) {
+      return AccessDecision.allow();
+    }
+
+    try {
+      final roles = await roleFuture;
+      final guard = Guard()..setUserRoles(roles);
+      return evaluateDetailed(
+        guard: guard,
+        requiredRoles: requiredRoles,
+        requiredPermissions: requiredPermissions,
+        condition: condition,
+        policyName: policyName,
+      );
+    } catch (_) {
+      final decision = AccessDecision.deny(
+        failedCondition: true,
+        reasonCode: policyName ?? 'async_evaluation_error',
+      );
+      GuardDiagnostics.logDecision(
+        policyName ?? 'GuardUtils.evaluateDetailedAsync',
+        decision,
+      );
+      return decision;
+    }
   }
 
   static bool evaluatePolicy({required Guard guard, required AccessPolicy policy}) {
@@ -171,4 +226,165 @@ class GuardUtils {
   static bool isValidCron(String cron) => ScheduleParser.validate(cron).isValid;
 
   static String? cronValidationError(String cron) => ScheduleParser.validate(cron).error;
+
+  /// Returns the set of active [DeviceType]s for the given [context].
+  ///
+  /// This includes:
+  /// - Screen size category: [DeviceType.mobile], [DeviceType.tablet], or [DeviceType.desktop]
+  ///   based on screen width and [breakpoints].
+  /// - [DeviceType.web] if running on Flutter Web.
+  /// - Platform device type ([DeviceType.android], [DeviceType.ios], [DeviceType.macos],
+  ///   [DeviceType.windows], [DeviceType.linux], [DeviceType.fuchsia]) if not on Web.
+  static Set<DeviceType> currentDeviceTypes(
+    BuildContext context, {
+    DeviceBreakpoints? breakpoints,
+  }) {
+    final bp = breakpoints ?? GuardConfig.deviceBreakpoints;
+    final types = <DeviceType>{};
+
+    if (kIsWeb) {
+      types.add(DeviceType.web);
+    } else {
+      switch (defaultTargetPlatform) {
+        case TargetPlatform.android:
+          types.add(DeviceType.android);
+          break;
+        case TargetPlatform.iOS:
+          types.add(DeviceType.ios);
+          break;
+        case TargetPlatform.macOS:
+          types.add(DeviceType.macos);
+          break;
+        case TargetPlatform.windows:
+          types.add(DeviceType.windows);
+          break;
+        case TargetPlatform.linux:
+          types.add(DeviceType.linux);
+          break;
+        case TargetPlatform.fuchsia:
+          types.add(DeviceType.fuchsia);
+          break;
+      }
+    }
+
+    double? width = MediaQuery.maybeSizeOf(context)?.width;
+    if (width == null) {
+      final view = View.maybeOf(context);
+      if (view != null && view.devicePixelRatio > 0) {
+        width = view.physicalSize.width / view.devicePixelRatio;
+      }
+    }
+
+    if (width != null && width > 0) {
+      types.add(DeviceType.fromWidth(width, breakpoints: bp));
+    } else {
+      types.add(DeviceType.mobile);
+    }
+
+    return types;
+  }
+
+  /// Returns the primary screen [DeviceType] for the given [context] based on [breakpoints].
+  static DeviceType currentDeviceType(
+    BuildContext context, {
+    DeviceBreakpoints? breakpoints,
+  }) {
+    final bp = breakpoints ?? GuardConfig.deviceBreakpoints;
+    double? width = MediaQuery.maybeSizeOf(context)?.width;
+    if (width == null) {
+      final view = View.maybeOf(context);
+      if (view != null && view.devicePixelRatio > 0) {
+        width = view.physicalSize.width / view.devicePixelRatio;
+      }
+    }
+
+    if (width != null && width > 0) {
+      return DeviceType.fromWidth(width, breakpoints: bp);
+    }
+    if (kIsWeb) return DeviceType.web;
+    return DeviceType.mobile;
+  }
+
+  /// Evaluates whether the current environment matches any of the [allowedDevices].
+  ///
+  /// [allowedDevices] may contain [DeviceType] instances or [String]s ('mobile', 'tablet', 'desktop', 'web', etc.).
+  static bool isDeviceAllowed({
+    required BuildContext context,
+    required List<dynamic> allowedDevices,
+    DeviceBreakpoints? breakpoints,
+    DeviceType? currentDevice,
+    Set<DeviceType>? currentDevices,
+    bool Function(Set<DeviceType> currentTypes, List<DeviceType> allowedTypes)? deviceEvaluator,
+  }) {
+    if (GuardConfig.developerOverrideEnabled) return true;
+    if (allowedDevices.isEmpty) return false;
+
+    final Set<DeviceType> activeTypes;
+    if (currentDevices != null) {
+      activeTypes = currentDevices;
+    } else if (currentDevice != null) {
+      activeTypes = {currentDevice};
+    } else {
+      activeTypes = currentDeviceTypes(context, breakpoints: breakpoints);
+    }
+
+    final allowedTypes = allowedDevices
+        .map(DeviceType.from)
+        .whereType<DeviceType>()
+        .toList(growable: false);
+
+    if (deviceEvaluator != null) {
+      return deviceEvaluator(activeTypes, allowedTypes);
+    }
+
+    return activeTypes.any(allowedTypes.contains);
+  }
+
+  /// Detailed evaluation for device-based access control with [AccessDecision].
+  static AccessDecision isDeviceAllowedDetailed({
+    required BuildContext context,
+    required List<dynamic> allowedDevices,
+    DeviceBreakpoints? breakpoints,
+    DeviceType? currentDevice,
+    Set<DeviceType>? currentDevices,
+    bool Function(Set<DeviceType> currentTypes, List<DeviceType> allowedTypes)? deviceEvaluator,
+  }) {
+    if (GuardConfig.developerOverrideEnabled) {
+      final decision = AccessDecision.allow();
+      GuardDiagnostics.logDecision('DeviceTypeGuard', decision);
+      return decision;
+    }
+
+    final allowed = isDeviceAllowed(
+      context: context,
+      allowedDevices: allowedDevices,
+      breakpoints: breakpoints,
+      currentDevice: currentDevice,
+      currentDevices: currentDevices,
+      deviceEvaluator: deviceEvaluator,
+    );
+
+    final decision = allowed
+        ? AccessDecision.allow()
+        : AccessDecision.deny(
+            failedCondition: true,
+            reasonCode: 'device_type_guard_denied',
+          );
+
+    GuardDiagnostics.logDecision('DeviceTypeGuard', decision);
+    return decision;
+  }
+
+  /// Checks if a single [currentDevice] is contained within [allowedDevices].
+  static bool isDeviceTypeAllowed({
+    required DeviceType currentDevice,
+    required List<dynamic> allowedDevices,
+  }) {
+    if (GuardConfig.developerOverrideEnabled) return true;
+    final allowedTypes = allowedDevices
+        .map(DeviceType.from)
+        .whereType<DeviceType>()
+        .toSet();
+    return allowedTypes.contains(currentDevice);
+  }
 }
