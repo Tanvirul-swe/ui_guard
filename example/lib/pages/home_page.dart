@@ -1,3 +1,4 @@
+import 'package:example/pages/device_type_guard_page.dart';
 import 'package:example/pages/shedule_guard_page.dart';
 import 'package:example/pages/timed_access_page.dart';
 import 'package:example/widget/combined_guard_panel.dart';
@@ -226,6 +227,20 @@ class _RoleHomePageState extends State<RoleHomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => const ScheduleGuardTestPage(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              _NavigationCard(
+                title: 'DeviceTypeGuard Page',
+                subtitle: 'Responsive device and screen size gating.',
+                icon: Icons.devices,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DeviceTypeGuardPage(),
                     ),
                   );
                 },

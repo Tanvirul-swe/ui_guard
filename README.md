@@ -68,6 +68,7 @@ For example:
 * ⏱️ Start/end time-based UI control
 * 🕒 Cron-style scheduled UI access
 * 🌍 Optional UTC schedule evaluation
+* 📱 Responsive and device-based UI control with `DeviceTypeGuard`
 * 🔔 Access decision callbacks for logging and debugging
 
 ---
@@ -143,6 +144,7 @@ can automatically rebuild.
 | Reuse named authorization rules across screens  | `PolicyGuard` + `AccessPolicy` |
 | Enable content only in a start/end time window  | `TimedAccessGuard`             |
 | Enable content using a cron schedule            | `ScheduleGuard`                |
+| Show/hide UI based on device type / screen size | `DeviceTypeGuard`              |
 
 ---
 
@@ -613,6 +615,53 @@ useUtc: true
 
 ---
 
+# 📱 Device & Screen-Based Access with `DeviceTypeGuard`
+
+`DeviceTypeGuard` shows or hides UI elements based on the device type and screen size the app is running on.
+
+### ✨ Benefits & Use Cases
+* 📱 Show a simplified layout on phones, and an advanced one on tablets or desktops
+* 🌐 Hide certain features on web (e.g., camera, hardware-specific tools) or enable web-only controls
+* 📐 Conditional rendering of widgets based on responsive screen breakpoints
+* 💻 Platform-specific UI gating (Android, iOS, macOS, Windows, Linux, Web)
+* 🎨 Supports responsive design logic directly in your widget tree
+
+### 🔧 Example: Responsive Layout (Issue #9 Planned API)
+
+```dart
+DeviceTypeGuard(
+  allowedDevices: ['mobile', 'tablet'],
+  builder: (_) => const MobileView(),
+  fallbackBuilder: (_) => const DesktopView(),
+);
+```
+
+### 🔧 Example: Using `DeviceType` Enum
+
+```dart
+DeviceTypeGuard(
+  allowedDevices: [DeviceType.desktop, DeviceType.web],
+  builder: (_) => const DesktopOrWebHeader(),
+  fallbackBuilder: (_) => const MobileHeader(),
+);
+```
+
+### 🔧 Example: Custom Breakpoints & Overrides
+
+```dart
+DeviceTypeGuard(
+  allowedDevices: const ['tablet', 'desktop'],
+  breakpoints: const DeviceBreakpoints(
+    mobileBreakpoint: 500,
+    tabletBreakpoint: 900,
+  ),
+  builder: (_) => const ExpandedDashboard(),
+  fallbackBuilder: (_) => const CompactDashboard(),
+);
+```
+
+---
+
 # 📱 Example App
 
 A complete working example is available in:
@@ -635,6 +684,7 @@ The example application demonstrates:
 * `onDecision` diagnostics
 * `TimedAccessGuard`
 * `ScheduleGuard`
+* `DeviceTypeGuard`
 * Developer override behavior
 
 You can explore the example project to understand how the different guards can work together in a real Flutter application.
