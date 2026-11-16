@@ -1,67 +1,62 @@
 # Release Checklist (pub.dev)
 
-Use this checklist before creating a GitHub Release so `Publish to pub.dev` can run successfully.
+Use this checklist to publish a new version of `ui_guard` to pub.dev.
 
-## 1) One-time repository setup
+## 1) Prepare the release
 
-- [ ] Configure **pub.dev Trusted Publisher** for this repository.
-  - pub.dev package → Admin → Publishing → Trusted publishers.
-  - Add your GitHub repository as a trusted publisher.
-- [ ] In GitHub repo settings, create environment **`pub.dev`**.
-- [ ] (Recommended) Protect `main` branch and require CI checks.
-
----
-
-## 2) Prepare the release PR
-
-- [ ] Update `pubspec.yaml` version (example: `1.1.1`).
-- [ ] Add release notes section to `CHANGELOG.md` (same version).
-- [ ] Update docs/examples if API changed.
-- [ ] Ensure `.github/workflows/ci.yml` passes in PR.
+- [ ] Update `pubspec.yaml` version (e.g. `1.2.0`).
+- [ ] Add release notes section to `CHANGELOG.md` for the version.
+- [ ] Update docs and examples if API changed.
+- [ ] Ensure all tests and analysis pass locally:
+  ```bash
+  flutter analyze
+  flutter test --exclude-tags unstable
+  ```
 
 ---
 
-## 3) Merge and create release tag
+## 2) Verify package before publishing
 
-After merging PR to `main`:
+Run a dry-run check from the root directory:
+
+```bash
+dart pub publish --dry-run
+```
+
+Ensure there are **0 warnings** and **0 errors**.
+
+---
+
+## 3) Publish to pub.dev
+
+Publish directly using the Dart CLI:
+
+```bash
+dart pub publish
+```
+
+*(If prompted, complete the one-time browser login to authorize your pub.dev account).*
+
+---
+
+## 4) Tag the release on GitHub
+
+After publishing:
 
 - [ ] Create a Git tag in SemVer format:
-  - `v1.1.1` for stable
-  - `v1.1.1-rc.1` for pre-release
-- [ ] Create a GitHub Release from that tag and click **Publish release**.
-
-> Publishing the release triggers `.github/workflows/publish.yml`.
-
----
-
-## 4) Workflow validations performed automatically
-
-The publish workflow checks:
-
-- [ ] Tag name matches `pubspec.yaml` version (ignoring leading `v`).
-- [ ] `CHANGELOG.md` contains an entry for that version.
-- [ ] `flutter analyze` and `flutter test` pass.
-- [ ] `dart pub publish --dry-run` passes.
-- [ ] `dart pub publish -f` runs via trusted publishing.
+  ```bash
+  git tag v1.2.0
+  git push origin v1.2.0
+  ```
+- [ ] Create a GitHub Release with the tag and copy the release notes from `CHANGELOG.md`.
 
 ---
 
 ## 5) Post-publish verification
 
-- [ ] Verify new version appears on pub.dev package page.
-- [ ] Confirm README and API docs render correctly.
-- [ ] Smoke-test install in a clean app:
-  - `flutter pub add ui_guard`
-  - Run sample integration quickly.
-- [ ] Announce release notes.
-
----
-
-## Rollback / Hotfix
-
-If publish fails:
-
-1. Inspect failed GitHub Action logs.
-2. Fix issue in new PR.
-3. Bump to next patch version (do not reuse published versions).
-4. Tag and publish a new GitHub Release.
+- [ ] Verify new version appears on [pub.dev/packages/ui_guard](https://pub.dev/packages/ui_guard).
+- [ ] Confirm README and API documentation render correctly.
+- [ ] Smoke-test installation in a clean project:
+  ```bash
+  flutter pub add ui_guard
+  ```

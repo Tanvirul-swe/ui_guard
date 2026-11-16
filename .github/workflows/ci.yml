@@ -1,4 +1,4 @@
-name: CI
+name: Code Quality & CI
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     branches: [main, master]
 
 jobs:
-  test:
+  quality-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,13 +19,13 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
+      - name: Analyze code quality
         run: flutter analyze
 
-      - name: Run tests
+      - name: Run unit & widget tests
         run: flutter test --exclude-tags unstable
 
-      - name: Verify example
+      - name: Verify example app
         run: |
           cd example
           flutter pub get
