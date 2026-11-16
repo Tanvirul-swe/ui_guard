@@ -17,6 +17,9 @@
   <a href="https://flutter.dev">
     <img src="https://img.shields.io/badge/flutter-website-deepskyblue.svg" alt="Flutter Website">
   </a>
+  <a href="https://buymeacoffee.com/tanvir_swe">
+    <img src="https://img.shields.io/badge/Sponsor-Buy%20Me%20a%20Coffee-ffdd00.svg?logo=buy-me-a-coffee&logoColor=black" alt="Sponsor">
+  </a>
 </p>
 
 <p align="center">
@@ -878,7 +881,7 @@ To contribute:
 
 If you find `ui_guard` useful, consider supporting the project.
 
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge\&logo=buy-me-a-coffee\&logoColor=black)](https://coff.ee/tanvir_swe)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge\&logo=buy-me-a-coffee\&logoColor=black)](https://buymeacoffee.com/tanvir_swe)
 
 Prefer mobile?
 
